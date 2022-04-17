@@ -1,6 +1,7 @@
 'use strict';
 
 const projectEnum = require('../helpers/project-enum')
+var bcrypt = require("bcryptjs");
 
 module.exports = {
   up: async (queryInterface) => queryInterface.bulkInsert('users', [
@@ -8,7 +9,7 @@ module.exports = {
       role: projectEnum.user_role.director,
       full_name: "Azril Wira",
       username: "azril",
-      password: "azril",
+      password: bcrypt.hashSync("azril", 8),
       created_at: new Date(),
       updated_at: new Date()
     },
