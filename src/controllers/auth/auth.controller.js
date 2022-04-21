@@ -13,23 +13,23 @@ require("dotenv").config()
 
     const user = await User.findOne({ where : { username: username } })
     if (!user) {
-      return errorResponse(req, res, "Invalid username or password", 401);
+      return errorResponse(res, "Invalid username or password", 401);
     }
 
     const isPasswordValid = bcrypt.compareSync(password, user.password);
     if (!isPasswordValid) {
-      return errorResponse(req, res, "Invalid username or password", 401);
+      return errorResponse(res, "Invalid username or password", 401);
     }
 
     var authToken = jwt.sign({ id: user.id }, process.env.SECRET, {
       expiresIn: 86400 // 24 hours
     });
 
-    return successResponse(req, res, {
+    return successResponse(res, {
       accessToken: authToken,
       user: user
     });
   } catch (error) {
-    return errorResponse(req, res, error.message);
+    return errorResponse(res, error.message);
   }
 };

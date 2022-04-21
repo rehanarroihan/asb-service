@@ -1,5 +1,6 @@
 const { User } = require("../../models");
 var bcrypt = require("bcryptjs");
+const { Op } = require('sequelize');
 
 const { successResponse, errorResponse } = require('../../helpers/general-helper')
 
@@ -9,7 +10,7 @@ exports.create = async (req, res) => {
 
     const user = await User.findOne({ where : {username} });
     if (user) {
-      return errorResponse(req, res, "User already exist with the same username");
+      return errorResponse(res, "User already exist with the same username");
     }
 
     const newUser = await User.create({
@@ -21,28 +22,36 @@ exports.create = async (req, res) => {
 
     delete newUser.dataValues.password;
 
-    return successResponse(req, res, newUser);
+    return successResponse(res, newUser);
   } catch (e) {
-    return errorResponse(req, res, e.message);
+    return errorResponse(res, e.message);
   }
 }
 
 exports.getAll = async (req, res) => {
   try {
-    const page = req.params.page ?? 1;
-    const limit = req.params.limit ?? 10;
+    const { page, size, title } = req.query;
 
-    const users = await User.findAndCountAll({
-      order: [
-        ["created_at", "DESC"],
-        ["full_name", "ASC"],
-      ],
-      offset: (page - 1) * limit,
-      limit,
-    });
+    var condition = title ? { full_name: { [Op.like]: `%${title}%` } } : null;
+    const { limit, offset } = getPagination(page, size);
+    const users = await User.findAndCountAll({ where: condition, limit, offset });
+    const response = getPagingData(users, page, limit);
 
-    return successResponse(req, res, { users });
+    return successResponse(res, response);
   } catch (e) {
-    return errorResponse(req, res, e.message);
+    return errorResponse(res, e.message);
   }
+};
+
+const getPagingData = (data, page, limit) => {
+  const { count: totalItems, rows } = data;
+  const currentPage = page ? + page : 0;
+  const totalPages = Math.ceil(totalItems / limit);
+  return { totalItems, totalPages, currentPage, rows };
+};
+
+const getPagination = (page, size) => {
+  const limit = size ? +size : 3;
+  const offset = page ? page * limit : 0;
+  return { limit, offset };
 };

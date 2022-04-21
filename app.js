@@ -19,14 +19,6 @@ app.use('/', router);
 
 app.use(logger('dev'))
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  res.json({
-    message: 404,
-    error: 404
-  });
-});
-
 app.use(errorHandler);
 
 module.exports = app;
