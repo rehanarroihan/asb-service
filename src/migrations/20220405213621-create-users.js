@@ -18,6 +18,18 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
+      profile_picture: {
+        type: Sequelize.STRING,
+        defaultValue: null,
+      },
+      address: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+      dob: {
+        type: Sequelize.DATE,
+        allowNull: false,
+      },
       password: {
         type: Sequelize.STRING,
         allowNull: false,

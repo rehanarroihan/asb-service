@@ -6,5 +6,7 @@ exports.register = {
     username: Joi.string().required(),
     password: Joi.string().required(),
     role: Joi.string().required(),
+    dob: Joi.string().required(),
+    address: Joi.string().required(),
   }),
 }

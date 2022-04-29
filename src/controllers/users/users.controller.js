@@ -13,16 +13,28 @@ exports.create = async (req, res) => {
       return errorResponse(res, "User already exist with the same username");
     }
 
+    let fileName = null
+    if (req.files) {
+      let profilePicture = req.files.profile_picture
+      if (profilePicture) {
+        fileName = Date.now() + profilePicture.name
+        await profilePicture.mv('./uploads/' + fileName);
+      }
+    }
+
     const newUser = await User.create({
-      role,
-      full_name,
-      username,
-      password: bcrypt.hashSync(password, 8)
+      roel: role,
+      full_name: full_name,
+      username: username,
+      password: bcrypt.hashSync(password, 8),
+      address: address,
+      profile_picture: fileName,
+      dob: dob,
     })
 
     delete newUser.dataValues.password;
 
-    return successResponse(res, newUser);
+    return successResponse(res, newUser, undefined, 201);
   } catch (e) {
     return errorResponse(res, e.message);
   }
@@ -30,12 +42,10 @@ exports.create = async (req, res) => {
 
 exports.getAll = async (req, res) => {
   try {
-    const { page, size, title } = req.query;
-
-    var condition = title ? { full_name: { [Op.like]: `%${title}%` } } : null;
-    const { limit, offset } = getPagination(page, size);
+    var condition = req.query.title ? { full_name: { [Op.like]: `%${ req.query.title }%` } } : null;
+    const { limit, offset } = getPagination(parseInt(req.query.page)-1, req.query.limit);
     const users = await User.findAndCountAll({ where: condition, limit, offset });
-    const response = getPagingData(users, page, limit);
+    const response = getPagingData(users, req.query.page, limit);
 
     return successResponse(res, response);
   } catch (e) {

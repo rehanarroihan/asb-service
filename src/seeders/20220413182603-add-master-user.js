@@ -9,7 +9,9 @@ module.exports = {
       role: projectEnum.user_role.director,
       full_name: "Azril Wira",
       username: "azril",
+      address: "Jalan jalan",
       password: bcrypt.hashSync("azril", 8),
+      dob: new Date(),
       created_at: new Date(),
       updated_at: new Date()
     },
