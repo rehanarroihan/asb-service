@@ -6,7 +6,7 @@ var bcrypt = require("bcryptjs");
 module.exports = {
   up: async (queryInterface) => queryInterface.bulkInsert('users', [
     {
-      role: projectEnum.user_role.director,
+      role: projectEnum.user_role[0].id,
       full_name: "Azril Wira",
       username: "azril",
       address: "Jalan jalan",

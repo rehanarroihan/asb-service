@@ -1,6 +1,7 @@
 const { User } = require("../../models");
 var bcrypt = require("bcryptjs");
 const { Op } = require('sequelize');
+const projectEnum = require('../../helpers/project-enum')
 
 const { successResponse, errorResponse } = require('../../helpers/general-helper')
 
@@ -52,6 +53,24 @@ exports.getAll = async (req, res) => {
     return errorResponse(res, e.message);
   }
 };
+
+exports.usernameCheck = async (req, res) => {
+  try {
+    const username = req.body.username
+    const user = await User.findOne({ where : {username} });
+    if (user) {
+      return errorResponse(res, "Username not available", 200);
+    }
+
+    return successResponse(res, undefined, "Username available");
+  } catch (e) {
+    return errorResponse(res, e.message);
+  }
+};
+
+exports.roles = async (req, res) => {
+  return successResponse(res, projectEnum.user_role)
+}
 
 const getPagingData = (data, page, limit) => {
   const { count: totalItems, rows } = data;

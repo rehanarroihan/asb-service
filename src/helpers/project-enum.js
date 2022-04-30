@@ -1,7 +1,16 @@
 module.exports = {
-  user_role: {
-    director: 1,
-    ops_manager: 2,
-    admin: 3
-  },
+  user_role: [
+    {
+      id: 1,
+      name: "Direktur"
+    },
+    {
+      id: 2,
+      name: "Manajer Operasional"
+    },
+    {
+      id: 3,
+      name: "Admin"
+    },
+  ],
 }
