@@ -16,3 +16,9 @@ exports.usernameAvail = {
     username: Joi.string().min(5).required(),
   }),
 }
+
+exports.delete = {
+  body: Joi.object({
+    user_id: Joi.number().required()
+  })
+}

@@ -43,5 +43,14 @@ Router.get(
   AuthHandler.verifyToken,
   usersController.roles
 );
+Router.delete(
+  '/user',
+  [
+    AuthHandler.verifyToken,
+    AuthHandler.isDirector,
+    validate(usersValidator.delete)
+  ],
+  usersController.delete
+);
 
 module.exports = Router

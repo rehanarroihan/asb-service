@@ -1,6 +1,7 @@
 const { User } = require("../../models");
 var bcrypt = require("bcryptjs");
 const { Op } = require('sequelize');
+const Sequelize = require('sequelize');
 const projectEnum = require('../../helpers/project-enum')
 
 const { successResponse, errorResponse } = require('../../helpers/general-helper')
@@ -46,6 +47,11 @@ exports.getAll = async (req, res) => {
     var condition = req.query.title ? { full_name: { [Op.like]: `%${ req.query.title }%` } } : null;
     const { limit, offset } = getPagination(parseInt(req.query.page)-1, req.query.limit);
     const users = await User.findAndCountAll({ where: condition, limit, offset });
+    users.rows.map((user) => {
+      // INFO : populating role with data dummy's object
+      const detailedRole = projectEnum.user_role.find(r => r.id == user.role)
+      user.role = detailedRole !== undefined ? detailedRole : null
+    })
     const response = getPagingData(users, req.query.page, limit);
 
     return successResponse(res, response);
@@ -70,6 +76,16 @@ exports.usernameCheck = async (req, res) => {
 
 exports.roles = async (req, res) => {
   return successResponse(res, projectEnum.user_role)
+}
+
+exports.delete = async (req, res) => {
+  try {
+    const userId = req.body.user_id
+    const deleteUser = await User.destroy({where: {id: userId}});
+    return successResponse(res, deleteUser, "User deleted");
+  } catch (e) {
+    return errorResponse(res, e.message);
+  }
 }
 
 const getPagingData = (data, page, limit) => {
